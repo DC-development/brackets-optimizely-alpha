@@ -1,0 +1,10 @@
+#optimizely-toolbar-icon {
+    background: url("../assets/optimizely.ico") no-repeat 0 0;
+    background-size: 95%;
+    background-position: 1px 1px;
+}
+
+#optimizely-toolbar-icon.on {
+    background: url("../assets/optimizely.ico") no-repeat 0 0;
+    background-size: 95%;
+}
