@@ -13,36 +13,57 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils");
  
+    //Find out wethet this returns a promise we do not use here
     ExtensionUtils.loadStyleSheet(module, "style/styles.css");
-
+    
+    //This seems to be the most simple way to integrate with brackets-ui
     var $icon = $("<a id='optimizely-toolbar-icon' href='#'> </a>")
         .attr("title", "Optimizely")
         .appendTo($("#main-toolbar .buttons"));
-
+    
+    //Will allways rtigger mainfunction, 
+    //yet - should be smarter since oyu overriding all your files all the time.
     $icon.on("click", handleHelloWorld);
 
+    /**
+    *   Main function of plugin
+    */
     function handleHelloWorld() {
 
         var token = "";
         var projectName = "";
-        var projectRoot = ProjectManager.getProjectRoot()._path;
-        var configPath = projectRoot+"optimizely.js";
-        var configFile = FileSystem.getFileForPath(configPath);
         var projectId = "";
         var jsonObject;
         var readConfig;
         var experimentName;
-
+        var baseUrl = "https://www.optimizelyapis.com/";
+        var baseUrlLocal = "http://localhost:9000/";
         
-        // Read The Config File
-        readConfig = FileUtils.readAsText(configFile);  // returns a promise
+        //Using brackets api to get teh project root
+        // @Todo:Find out what happens if theres no project
+        var projectRoot = ProjectManager.getProjectRoot()._path;
+        
+        //This is actually the exact location of the optimizely config file
+        var configPath = projectRoot+"optimizely.js";
+        
+            
+        //This is not loading anything it provides a handle with the path 
+        var configFile = FileSystem.getFileForPath(configPath);
+        
+    
+        // returns a promise with the path as param 
+        //of wich we will define the done and fail method
+        readConfig = FileUtils.readAsText(configFile);  
 
         // and completes asynchronously
+        // this makes sense !
         readConfig.done(function (text) {        
-           // console.log("The contents of the file are:\n" + text);
+            // console.log("The contents of the file are:\n" + text);
             jsonObject = JSON.parse(text)
             token = jsonObject.token;
             projectId = jsonObject.project_id;
+            
+            //Start importing the projects after config has been loaded
             getProject(projectId);
         })
         .fail(function (errorCode) {
@@ -53,28 +74,48 @@ define(function (require, exports, module) {
         });
 
         //console.log(ProjectManager.addClassesProvider().fullPath());
-        // Read Projects
+        //Read All Projects for your account 
+        //project_id is not geting used at all - would read single entry with
+        //id given at the end of path
         function getProject(project_id){
             $.ajax({
-                url: "https://www.optimizelyapis.com/experiment/v1/projects/"+project_id,
+                url: baseUrlLocal+"experiment/v1/projects/",
                 type: "GET",
                 beforeSend: function(xhr){xhr.setRequestHeader('token', token);},
-                success: function(data) {                  
-                    projectName = data.project_name;
-                    getExperiments(data.id);
+                // @Todo: find out wether this is save to do 
+                //Maybe theres a better way than "success" something
+                //like done or loaded.
+                success: function(data) {
+                    data.forEach(function(item, index) {
+                        console.log(item.project_name);
+                        projectName = item.project_name;
+                        console.log(item.id);
+                        //            
+                        getExperiments(item.id);
+                        
+                    });
                 }
             });
         }
-
+        
+        // @todo: trouble starts here, already - just find out whats going here
+        // AND how to safely initialize the renderung, in the frist place
         // Read A Projects Experiments
         function getExperiments(project_id){
             $.ajax({
                 url: "https://www.optimizelyapis.com/experiment/v1/projects/"+project_id+"/experiments/",
                 type: "GET",
                 beforeSend: function(xhr){xhr.setRequestHeader('token', token);},
-                success: function(data) { 
-                    experimentName =  data[0]['description'];
-                    getVariant(data[0].variation_ids[1]);
+                success: function(data) {  
+                    data.forEach(function(item, index) {
+                        console.log(item);
+                        experimentName =  item.description;
+                        //item.variation_ids.forEach(function(variation) {
+                        //    console.log(variation);
+                        //    getVariant(variation);
+                        //})
+                        getVariant(item.variation_ids[1]);
+                    });
                 }
             });
         }
