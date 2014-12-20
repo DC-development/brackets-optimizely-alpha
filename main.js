@@ -23,10 +23,11 @@ define(function (require, exports, module) {
         .attr("title", "Optimizely")
         .appendTo($("#main-toolbar .buttons"));
 
+
+
     //Will allways rtigger mainfunction,
     //yet - should be smarter since oyu overriding all your files all the time.
     $icon.on("click", handleHelloWorld);
-
 
 
     /**
@@ -141,6 +142,7 @@ define(function (require, exports, module) {
                     xhr.setRequestHeader('token', token);
                 },
                 success: function (data) {
+
 
                     var variation = data.description;
                     var projectDirectory = FileSystem.getDirectoryForPath(projectRoot + "imported/" + project_name);

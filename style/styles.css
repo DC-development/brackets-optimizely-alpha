@@ -1,0 +1,37 @@
+#optimizely-toolbar-icon {
+    background: url("../assets/optimizely.ico") no-repeat 0 0;
+    background-size: 95%;
+    background-position: 1px 1px;
+}
+#optimizely-toolbar-icon.on {
+    background: url("../assets/optimizely.ico") no-repeat 0 0;
+    background-size: 95%;
+}
+.optimizely-panel-list {
+    list-style: none;
+    margin-left: 0;
+}
+.optimizely-panel-list li span,
+.optimizely-panel-list li {
+    display: block;
+}
+.optimizely-panel-list li span {
+    margin-bottom: 1px;
+    line-height: 1.2em;
+    padding: 8px;
+}
+
+.optimizely-panel-list .project {
+    background-color: #363636;
+}
+
+.optimizely-panel-list .experiment {
+    background-color: #323232;
+}
+.optimizely-panel-list .variation {
+    background-color: #292929;
+}
+
+.optimizely-panel-list li span:hover {
+    background-color: #444444;
+}
