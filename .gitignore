@@ -1,1 +1,8 @@
 .idea
+node_modules
+
+temp
+dist
+imported
+optimizely.js
+Gruntfile.js
