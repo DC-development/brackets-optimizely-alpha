@@ -13,8 +13,14 @@ define(function (require, exports, module) {
         brackets.getModule("document/DocumentManager"),
         FileSystem = brackets.getModule("filesystem/FileSystem"),
         FileUtils = brackets.getModule("file/FileUtils"),
-        ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
+        ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
+        Menus = brackets.getModule("command/Menus"),
+        PanelManager = brackets.getModule("view/PanelManager"),
+         AppInit = brackets.getModule("utils/AppInit");
 
+
+    var panelHtml     = require("text!panel.html");
+    PanelManager.createBottomPanel("optimizely", $(panelHtml),200).show();
     //Find out wethet this returns a promise we do not use here
     ExtensionUtils.loadStyleSheet(module, "style/styles.css");
 
@@ -27,10 +33,13 @@ define(function (require, exports, module) {
     //yet - should be smarter since oyu overriding all your files all the time.
     $icon.on("click", handleHelloWorld);
 
+
+
     /**
      *   Main function of plugin
      */
     function handleHelloWorld() {
+
 
         var token = "";
 
@@ -138,6 +147,9 @@ define(function (require, exports, module) {
                     xhr.setRequestHeader('token', token);
                 },
                 success: function (data) {
+                    //Just for giggles - actually we have to build up our treeObject and
+                    //then inject the generated html relfection of it.
+                    $("#optimizelyPanel ul").append("<li id='var_"+variation_id+"'><span class='variation'>"+project_name+"</span></li>")
 
                     var variation = data.description;
                     var projectDirectory = FileSystem.getDirectoryForPath(projectRoot + "imported/" + project_name);
